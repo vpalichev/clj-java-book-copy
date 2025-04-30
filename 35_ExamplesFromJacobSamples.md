@@ -61,25 +61,25 @@ Cover for call to underlying invokev():
 
 ### Get
 
-```text
+```java
 Dispatch.get(xl, "Version");
 
 Dispatch.get(workbooks, "Add").toDispatch();
 
 Dispatch.get(workbook, "ActiveSheet").toDispatch();
 
-Dispatch.get(a1, "Value"));
+Dispatch.get(a1, "Value");
 
-Dispatch.get(a2, "Value"));
+Dispatch.get(a2, "Value");
 ```
 
-Dispatch dispatchTarget,  **String name**:
+- Dispatch dispatchTarget,  **String name**:
 
 ```java
 invokev(dispatchTarget, name, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS);
 ```
 
-Dispatch dispatchTarget, **int dispid**
+- Dispatch dispatchTarget, **int dispid**
 
 ```java
 invokev(dispatchTarget, dispid, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS);
