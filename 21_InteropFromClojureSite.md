@@ -18,16 +18,16 @@
 
 ```clojure
 String
--> java.lang.String
+;; returns: java.lang.String
 
 (defn date? [d] (instance? java.util.Date d))
--> #'user/date?
+;; returns: #'user/date?
 
 (.getEnclosingClass java.util.Map$Entry)
--> java.util.Map
+;; returns: java.util.Map
 
 (.getComponentType String/1)
--> java.lang.String
+;; returns: java.lang.String
 ```
 
 
