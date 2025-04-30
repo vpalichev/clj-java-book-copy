@@ -113,25 +113,29 @@ invoke(dispatchTarget, dispid, Dispatch.Put, new Object[] { val }, new int[1]);
 Dispatch.call(workbook, "Close", f);
 ```
 
-.call   (Dispatch dispatchTarget, int dispid) 
+- .call   (Dispatch dispatchTarget, int dispid) 
 
+```java
 callN(dispatchTarget, dispid, NO_VARIANT_ARGS);
+```
 
+- .call   (Dispatch dispatchTarget, int dispid, java.lang.Object... attributes) 
 
-.call   (Dispatch dispatchTarget, int dispid, java.lang.Object... attributes) 
-
+```java
 callN(dispatchTarget, dispid, attributes);
+```
 
+- .call   (Dispatch dispatchTarget, java.lang.String name) 
 
-.call   (Dispatch dispatchTarget, java.lang.String name) 
-
+```java
 callN(dispatchTarget, name, NO_VARIANT_ARGS);
+```
 
+- .call   (Dispatch dispatchTarget, java.lang.String name, java.lang.Object... attributes) 
 
-.call   (Dispatch dispatchTarget, java.lang.String name, java.lang.Object... attributes) 
-
+```java
 callN(dispatchTarget, name, attributes);
-
+```
 
 
 
