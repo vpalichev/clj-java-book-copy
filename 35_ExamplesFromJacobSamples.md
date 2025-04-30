@@ -61,20 +61,56 @@ Cover for call to underlying invokev():
 
 ### Get
 
-.get  Dispatch dispatchTarget  **String name**
-> invokev(dispatchTarget, name, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS);
+Dispatch.get(xl, "Version");
+Dispatch.get(workbooks, "Add").toDispatch();
+Dispatch.get(workbook, "ActiveSheet").toDispatch();
+Dispatch.get(a1, "Value"));
+Dispatch.get(a2, "Value"));
 
-.get  Dispatch dispatchTarget  **int dispid**
+.get:  Dispatch dispatchTarget,  **String name**
+
+invokev(dispatchTarget, name, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS);
+
+.get:  Dispatch dispatchTarget, **int dispid**
+
 invokev(dispatchTarget, dispid, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS);
 
 ### Put
 
-.put  Dispatch dispatchTarget, **String name**, Object val
+.put:  Dispatch dispatchTarget, **String name**, Object val
+
 invoke(dispatchTarget, name, Dispatch.Put, new Object[] { val }, new int[1]);
 
-.put  Dispatch dispatchTarget, **int dispid**, Object val
+.put:  Dispatch dispatchTarget, **int dispid**, Object val
+
 invoke(dispatchTarget, dispid, Dispatch.Put, new Object[] { val }, new int[1]);
 
+### Call
+
+```java
+Dispatch.call(workbook, "Close", f);
+```
+
+.call   (Dispatch dispatchTarget, int dispid) 
+
+callN(dispatchTarget, dispid, NO_VARIANT_ARGS);
+
+
+
+.call   (Dispatch dispatchTarget, int dispid, java.lang.Object... attributes) 
+
+callN(dispatchTarget, dispid, attributes);
+
+
+
+.call   (Dispatch dispatchTarget, java.lang.String name) 
+
+callN(dispatchTarget, name, NO_VARIANT_ARGS);
+
+
+.call   (Dispatch dispatchTarget, java.lang.String name, java.lang.Object... attributes) 
+
+callN(dispatchTarget, name, attributes);
 
 
 
