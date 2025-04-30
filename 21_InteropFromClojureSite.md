@@ -54,8 +54,13 @@ Math/PI  ;; Classname/staticField
 ;;returns:  3.141592653589793
 ```
 
+# Dot special form
 
-
+- (. instance-expr member-symbol)
+- (. Classname-symbol member-symbol)
+- (. instance-expr -field-symbol)
+- (. instance-expr (method-symbol args*)) or (. instance-expr method-symbol args*)
+- (. Classname-symbol (method-symbol args*)) or (. Classname-symbol method-symbol args*)
 
 
 
