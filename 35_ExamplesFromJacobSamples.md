@@ -61,6 +61,8 @@ Cover for call to underlying invokev():
 
 ### Get
 
+**Examples**
+
 ```java
 Dispatch.get(xl, "Version");
 
@@ -87,6 +89,8 @@ invokev(dispatchTarget, dispid, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS);
 
 ### Put
 
+**Examples**
+
 ```java
 Dispatch.put(xl, "Visible", new Variant(true));
 
@@ -109,29 +113,31 @@ invoke(dispatchTarget, dispid, Dispatch.Put, new Object[] { val }, new int[1]);
 
 ### Call
 
+**Examples**
+
 ```java
 Dispatch.call(workbook, "Close", f);
 ```
 
-- .call   (Dispatch dispatchTarget, int dispid) 
+- Dispatch dispatchTarget, int dispid
 
 ```java
 callN(dispatchTarget, dispid, NO_VARIANT_ARGS);
 ```
 
-- .call   (Dispatch dispatchTarget, int dispid, java.lang.Object... attributes) 
+- Dispatch dispatchTarget, int dispid, java.lang.Object... attributes
 
 ```java
 callN(dispatchTarget, dispid, attributes);
 ```
 
-- .call   (Dispatch dispatchTarget, java.lang.String name) 
+- Dispatch dispatchTarget, java.lang.String name
 
 ```java
 callN(dispatchTarget, name, NO_VARIANT_ARGS);
 ```
 
-- .call   (Dispatch dispatchTarget, java.lang.String name, java.lang.Object... attributes) 
+- Dispatch dispatchTarget, java.lang.String name, java.lang.Object... attributes
 
 ```java
 callN(dispatchTarget, name, attributes);
