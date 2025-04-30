@@ -61,21 +61,38 @@ Cover for call to underlying invokev():
 
 ### Get
 
+```text
 Dispatch.get(xl, "Version");
+
 Dispatch.get(workbooks, "Add").toDispatch();
+
 Dispatch.get(workbook, "ActiveSheet").toDispatch();
+
 Dispatch.get(a1, "Value"));
+
 Dispatch.get(a2, "Value"));
+```
 
-.get:  Dispatch dispatchTarget,  **String name**
+Dispatch dispatchTarget,  **String name**:
 
+```java
 invokev(dispatchTarget, name, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS);
+```
 
-.get:  Dispatch dispatchTarget, **int dispid**
+Dispatch dispatchTarget, **int dispid**
 
+```java
 invokev(dispatchTarget, dispid, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS);
+```
 
 ### Put
+
+Dispatch.put(xl, "Visible", new Variant(true));
+
+Dispatch.put(a1, "Value", "123.456");
+
+Dispatch.put(a2, "Formula", "=A1\*2");
+
 
 .put:  Dispatch dispatchTarget, **String name**, Object val
 
@@ -96,11 +113,9 @@ Dispatch.call(workbook, "Close", f);
 callN(dispatchTarget, dispid, NO_VARIANT_ARGS);
 
 
-
 .call   (Dispatch dispatchTarget, int dispid, java.lang.Object... attributes) 
 
 callN(dispatchTarget, dispid, attributes);
-
 
 
 .call   (Dispatch dispatchTarget, java.lang.String name) 
