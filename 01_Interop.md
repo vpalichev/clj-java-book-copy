@@ -163,83 +163,73 @@ To read a static field:
 
 To call a static method:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (. File createTempFile "temp" ".txt")
 #object[java.io.File 0x4c2544bc "/var/folders/94/...6500566792.txt"]
-~~~
+```
 
 To call a method of an instance:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (. file getAbsolutePath)
 "/Users/ivan/drafts/project/book.txt"
-~~~
+```
 
 Or to read a field of an instance. Pay attention at the leading hyphen:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (. obj -value)
 ;; the same as `obj.value` in pure Java
-~~~
+```
 
 There is also a `set!` form that works in pair with the Dot macro. Use it to write a new value to a field:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (set! (. obj -value) 42)
 ;; the same as `obj.value = 42` in pure Java
-~~~
+```
 
 The last two cases with reading and writing a field are not common due to Java design. Exposing fields to the outer world is considered as bad practice. Instead, most Java programmers provide special methods to regulate how a certain field is being read or set. Thus, you call for `(.getValue obj)` or `(.setValue obj 42)` more often than accessing raw fields.
 
 The Double Dot macros acts similar to its Single Dot brother. It chains results between multiple expressions so the next form takes a value produced by a previous form. It is similar to the threading `->` macro that probably you are familiar with.
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (.. file toPath getFileSystem getClass getName)
 "sun.nio.fs.MacOSXFileSystem"
-~~~
+```
 
 Under the hood, it turns into a nested extression like:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (. (. (. (. (. file toPath) toPath) getFileSystem) getClass) getName)
-~~~
+```
 
 which is difficult to read since your eyes constantly jump to and fro.
 
 Each method in a chain is called from an object received from a previous unit. If any extra arguments are required, the method expression is put into parens:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (.. obj (some-method "foo") (other-method "bar" 42))
-~~~
+```
 
 ## Reflection
 
 To know what class an object belongs to, call `class` function:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (class file)
 java.io.File
-~~~
+```
 
 The `type` function acts similar but it checks for a variable's metadata first. Let's discuss how it works. If you define a variable with a type hint as shown below:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (def ^File file (File. "some/path.txt"))
-~~~
+```
 
 the metadata of `#'file` variable will contain a `:tag` field with `java.io.File` value:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (meta #'file)
 
 {:tag java.io.File,
@@ -248,12 +238,11 @@ the metadata of `#'file` variable will contain a `:tag` field with `java.io.File
  :file "*cider-repl*",
  :name file,
  :ns #namespace[project.into]}
-~~~
+```
 
 Probably you would like to divide logic into different branches depending on the variable's type. For example, a `file` parameter in a function might be of both `String` and `File` types. The function `instance?` checks if an object is an instance of a certain class. So instead of comparing types:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (case (class source)
 
   java.io.File
@@ -262,12 +251,11 @@ Probably you would like to divide logic into different branches depending on the
   String
   ;; do that
 )
-~~~
+```
 
 you declare predicates:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (def file? (partial instance? java.io.File))
 
 (cond
@@ -277,7 +265,7 @@ you declare predicates:
   (string? source)
   ;; do that
   )
-~~~
+```
 
 which is more readable and neat.
 
@@ -285,34 +273,30 @@ which is more readable and neat.
 
 Some Java methods accept an arbitrary number of arguments. They are marked with ellipsis in signatures and represent an array of objects when accessing them. A good example is a `format` method of a `String` class:
 
-{lang=java, linenos=off}
-~~~
+```java
 static String    format(String format, Object... args)
-~~~
+```
 
 In Clojure, calling such a method in this way won't work:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (String/format "%s %s %s" "foo" "bar" "baz")
-~~~
+```
 
 An exception will raise saying `No matching method: format`.
 
 This is because, in Clojure terms, the `args` parameters should be passed as a single array. It must be exactly a native Java array but not a Clojure sequence. To make your life a bit easier, there is already a `make-array` function that turns a Clojure collection into a Java typed array:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (String/format "%s %s %s" (into-array ["foo" "bar" "baz"]))
 "foo bar baz"
-~~~
+```
 
 By default, the function builds an array of `Objects` that satisfies the method's signature in our case. When you need an array of some certain type, you pass a class as the first parameter to that function:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (String/format "%s %s %s" (into-array String ["foo" "bar" "baz"]))
-~~~
+```
 
 ## Type hints
 
@@ -320,39 +304,35 @@ Yet Clojure is a dynamic language its runtime relies on types a lot. When it kno
 
 Here is an example of a function that stops a process which is an instance of `java.lang.Process` class:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (defn stop-process
   [^Process p]
   (when (.isAlive p)
     (.destroy p)))
-~~~
+```
 
 If you remove the `^Process` clause in the signature, the function will still work. But without a hint, Clojure spends extra time to figure out what the kind of an object is there. That's normal but reduces performance. To highlight all such problem places, set a special global variable to true:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (set! *warn-on-reflection* true)
-~~~
+```
 
 If you compile any code that suffers from missing hints, you will see warnings in the REPL:
 
-{lang=text, linenos=off}
-~~~
+```text
 Reflection warning, /src/project/proc.clj:136:5 - reference to field destroy can't be resolved.
-~~~
+```
 
 Type hints should definitely be put in bottleneck functions called often. It is a good practice to scan the codebase for missing hints from time to time. Yet there is no need to put tags everywhere you physically can. The compiler is smart enough to guess a further type if it has enough data.
 
 A type hint may be any class imported before. Sometimes, some complex Java signatures are required to specify an array of a certain type for example. So a hint takes a form of a string:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (defn ^"[Ljava.lang.String;"
   args->command
   [args]
   (into-array String (map str args)))
-~~~
+```
 
 ## Best practices
 
