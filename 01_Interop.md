@@ -6,18 +6,16 @@ This chapter explains basic Clojure capabilities to interoperate with Java. We w
 
 To use a class, you've got to import it first. There are two ways to import a class: in a namespace declaration which is desirable and in runtime using `import` function. For example:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (ns com.project.module
   (:import java.util.File))
-~~~
+```
 
 or
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (import 'java.util.File)
-~~~
+```
 
 In the first example, we specify a class without putting a leading quote. This is because the whole `ns` statement is a macro so everything inside it is quoted. Instead, when calling the `import` function in runtime we pass a symbol which's name stands for a class we need.
 
@@ -37,27 +35,24 @@ Let's demonstrate everything told so far with examples. We will use the standard
 
 Importing a single class:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (ns project.into
   (:import java.io.File))
-~~~
+```
 
 Importing several classes from the same package at once:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (ns project.into
   (:import java.io.File
            (java.util Date UUID)))
-~~~
+```
 
 Pay attention at extra parens around the `java.util` path. It's mandatory to put them here. They help Clojure reader to not get confused when parsing imports.
 
 Let's initiate some of the classes we've imported:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (def file (File. "/Users/ivan/.emacs"))
 
 ;; evaluating the `file` variable in repl prints
@@ -67,7 +62,7 @@ Let's initiate some of the classes we've imported:
 
 ;; evaluating `date` returns
 #inst "2018-08-25T08:20:40.412-00:00"
-~~~
+```
 
 ## Static methods
 
