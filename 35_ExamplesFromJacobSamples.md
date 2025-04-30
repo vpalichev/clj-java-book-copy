@@ -10,7 +10,7 @@ import com.jacob.com.Variant;
 public class ExcelDispatchTest {
 	public static void main(String[] args) {
 		ComThread.InitSTA();
-		
+
 		ActiveXComponent xl = new ActiveXComponent("Excel.Application");
 		try {
 			System.out.println("version=" + xl.getProperty("Version"));
@@ -40,3 +40,60 @@ public class ExcelDispatchTest {
 }
 
 ```
+
+
+public static final ints:
+
+> LOCALE_SYSTEM_DEFAULT = 2048; // Used to set the locale in a call. The user locale is another option
+> Method = 1; /** used by callN() and callSubN()
+> Get = 2; /** used by callN() and callSubN()
+> Put = 4; //** used by put()
+> int PutRef = 8; //** not used, probably intended for putRef() 
+
+private final static Object[] NO_OBJECT_ARGS = new Object[0];
+private final static Variant[] NO_VARIANT_ARGS = new Variant[0];
+private final static int[] NO_INT_ARGS = new int[0];
+
+
+## Dispatch methods:
+
+Cover for call to underlying invokev():
+
+### Get
+
+.get  Dispatch dispatchTarget  **String name**
+> invokev(dispatchTarget, name, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS);
+
+.get  Dispatch dispatchTarget  **int dispid**
+invokev(dispatchTarget, dispid, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS);
+
+### Put
+
+.put  Dispatch dispatchTarget, **String name**, Object val
+invoke(dispatchTarget, name, Dispatch.Put, new Object[] { val }, new int[1]);
+
+.put  Dispatch dispatchTarget, **int dispid**, Object val
+invoke(dispatchTarget, dispid, Dispatch.Put, new Object[] { val }, new int[1]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
