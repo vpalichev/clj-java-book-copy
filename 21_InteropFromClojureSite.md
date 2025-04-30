@@ -31,9 +31,30 @@ String
 ```
 
 
+# Member access
 
 
 
+- (.instanceMember instance args*) -> (.toUpperCase "fred") -> "FRED"
+- (.instanceMember Classname args*)
+- (.-instanceField instance)
+- (Classname/staticMethod args*)
+- (Classname/.instanceMethod instance args*)
+- Classname/staticField -> Math/PI -> 3.141592653589793
+
+
+```clojure
+(.toUpperCase "fred")
+-> "FRED"
+(.getName String)
+-> "java.lang.String"
+(.-x (java.awt.Point. 1 2))
+-> 1
+(System/getProperty "java.vm.version")
+-> "1.6.0_07-b06-57"
+Math/PI
+
+```
 
 
 
