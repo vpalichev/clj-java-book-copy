@@ -1,8 +1,8 @@
-0Introduction.txt
-1Interop.txt
-2ParsingUserAgent.txt
-3SanitizingHTML.txt
-4BoostingJDBC.txt
-5IOPipeline.txt
-6Process.txt
-7Summary.txt
+0. Introduction.txt
+1. Interop.txt
+2. ParsingUserAgent.txt
+3. SanitizingHTML.txt
+4. BoostingJDBC.txt
+5. IOPipeline.txt
+6. Process.txt
+7. Summary.txt
