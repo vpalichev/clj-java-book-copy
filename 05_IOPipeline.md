@@ -30,8 +30,8 @@ What I would like to highlight is the whole pipeline starts working immediately.
 
 Add dependencies we need:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 [org.apache.commons/commons-compress "1.5"]
 [clj-http "3.7.0"]
 [org.clojure/data.csv "0.1.4"]
@@ -54,8 +54,8 @@ That's a bit more than we used before. Let's go through the list quickly:
 
 Prepare a new module with all the stuff imported:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (ns project.io
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
@@ -74,8 +74,8 @@ The file we are going to process is known as "NPI Registry" and represents data 
 
 The first problem we are going to solve is to deal with a URL pointing to that file. It includes the current month name, e.g. August or September. Generally, it is not a problem to substitute it but sometimes the file is updated with a delay so it is still "August" whereas September has come. So we parse an HTML page to find a target link using Jsoup.
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (def files-page
   "http://download.cms.gov/nppes/NPI_Files.html")
 
@@ -95,8 +95,8 @@ This function returns a full URL we need as a string. At the moment of writing, 
 
 To get the file's binary stream, we send an HTTP request passing special options:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn get-file-stream
   [url]
   (:body (client/get url {:as :stream})))
@@ -104,16 +104,16 @@ To get the file's binary stream, we send an HTTP request passing special options
 
 The result will be a special Java object represents a stream:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 #object[clj_http.core.proxy$java.io.FilterInputStream$ff19274a 0x4b3d87e3
   "clj_http.core.proxy$java.io.FilterInputStream$ff19274a@4b3d87e3"]
 ~~~
 
 Reading manually it has no sense because it emits binary data. We convert it to a zipped stream which knows how to treat zipped data:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn ->zip-stream
   [stream]
   (new ZipArchiveInputStream stream))
@@ -121,8 +121,8 @@ Reading manually it has no sense because it emits binary data. We convert it to 
 
 Now we try to find a file we need in that stream. Remember, a zipped stream reads the table of all the files were zipped. In addition to their names and metadata, the table tracks their internal locations so you can jump to a certain file skipping all the rest.
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn- seek-stream
   [^ZipArchiveInputStream stream ^Pattern re]
   (loop []
@@ -141,15 +141,15 @@ Iteration stops once we found an entry with an appropriate name. The result will
 
 A file in archive that we are interested in is called `npidata_pfile_20050523-20180812.csv` so the regex would be:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (def re-csv #"(?i)_\d{8}-\d{8}\.csv$")
 ~~~
 
 Right after the stream has been pointed to a proper file, let's process its data with a CSV reader:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn read-csv
   [stream]
   (let [reader (io/reader stream)
@@ -163,8 +163,8 @@ First, the function reads the first header line and turns column names into keyw
 
 The final function takes a cleaned map and builds a business model. In our example, we just take a certain subset of that map but in a real case, we would do something more complicated: coerce some values to integers or booleans, unify codes, etc. We map a sequence of CSV rows on that function to get a sequence of business models.
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn ->model
   [row]
   (select-keys
@@ -182,8 +182,8 @@ It's time to save our results to the database. Inserting models one-by-one requi
 
 Here is a minor function that takes a lazy sequence and returns a lazy sequence of chunks:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn by-chunks
   [coll n]
   (partition n n [] coll))
@@ -196,8 +196,8 @@ Here is a minor function that takes a lazy sequence and returns a lazy sequence 
 
 To insert multiple records in the database at once, implement a shortcut for JDBC:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (def db
   {:dbtype "postgresql"
    :dbname "clj-db"
@@ -210,8 +210,8 @@ To insert multiple records in the database at once, implement a shortcut for JDB
 
 Ok, with everything has been implemented so far we compose a final combo. Here is how we get a sequence of business models:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn get-models
   []
   (let [file-url (find-url)
@@ -229,8 +229,8 @@ Pay attention we put `assert` to ensure we managed to find a file. Passing `nil`
 
 Let's fetch some leading models from the server:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (take 3 (get-models))
 
 ;; the output is truncated
@@ -241,8 +241,8 @@ That really works and the data arrives almost immediately. Imagine you have to w
 
 Now save the models into the database by chunks.
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn save-models
   [models]
   (doseq [chunk (by-chunks models 1000)]
@@ -252,8 +252,8 @@ Now save the models into the database by chunks.
 
 Putting everything together. It takes about 40 minutes on my laptop:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (save-models (get-models))
 ~~~
 

@@ -21,8 +21,8 @@ The whole pipeline we are going to go through is:
 
 We are going to work with Google Chrome and its `chromedriver` binary tool. I'm sure you have Chrome installed already. To achieve the driver, run in your terminal:
 
-{lang=bash, linenos=off}
-~~~
+
+~~~bash
 brew install chromedriver         # in MacOS
 sudo apt-get install chromedriver # in Ubuntu
 ~~~
@@ -36,6 +36,7 @@ After the installation, try to launch the driver manually. In case you installed
 The following message in the terminal indicates the driver works fine:
 
 {lang=bash, linenos=off}
+~~~bash
 Starting ChromeDriver 2.41.578706 (5f725d1b4f0a4acbf5259df887244095596231db)
 on port 9515. Only local connections are allowed.
 ~~~
@@ -46,16 +47,16 @@ Now quit it and go back into the editor.
 
 Add the dependencies we need:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 [clj-http "3.7.0"]
 [cheshire "5.6.3"]
 ~~~
 
 There is everything you are familiar so far. Prepare a new file named `proc.clj` with a namespace declaration:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (ns project.proc
   (:require [clojure.string :as str]
             [clj-http.client :as client]
@@ -71,8 +72,8 @@ The `ProcessBuilder` class prepares a further process step by step before you la
 
 Taking all together, let's write a simple Clojure wrapper:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn ^Process
   proc-start
 
@@ -95,8 +96,8 @@ Taking all together, let's write a simple Clojure wrapper:
 
 Its logic is really straightforward. First, it turns a collection of args into a Java array of strings. It's important since some arguments might be integers, e.g port numbers. The function `args->command` is trivial except for one thing:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn ^"[Ljava.lang.String;"
   args->command
   [args]
@@ -107,8 +108,8 @@ Take a look at its type declaration. We have to specify the result is a Java arr
 
 Next, some imperative code follows. For example, if extra environment variables were passed in an optional `:env` map, we merge them into the builder's variables. Here are the functions that do that:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn kw->env
   [kw]
   (-> kw
@@ -136,8 +137,8 @@ The `Process` object provides a few methods for only two of them we are interest
 
 Here is how we start the driver:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn start-chrome
   []
   (let [port 9999
@@ -157,15 +158,15 @@ We specified the port number as 9999 with additional verbosity. Also, we redirec
 
 Evaluating a `_proc` variable prints something like that:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 #object[java.lang.UNIXProcess 0x168e8647 "java.lang.UNIXProcess@168e8647"]
 ~~~
 
 It doesn't say anything about if a process is still alive or it failed. Since Java 8, the `Process` class has `.isAlive` method that returns a boolean value. But to make our code work with Java 7 too, let's write our own function:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn alive?
   [^Process p]
   (try
@@ -188,8 +189,8 @@ Now that the driver is working, we are going to call some of its REST API. We wo
 
 So far, none of the Chrome windows has opened because we didn't initiate a session. Let's obtain it. As usual, we create a couple of functions for that:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (def base-url "http://127.0.0.1:9999")
 
 (defn make-url [& args]
@@ -211,8 +212,8 @@ So far, none of the Chrome windows has opened because we didn't initiate a sessi
 
 This function performs a POST request to the `http://127.0.0.1:9999/session` endpoint passing a JSON payload with one field:
 
-{lang=json, linenos=off}
-~~~
+
+~~~json
 {"desiredCapabilities" {}}
 ~~~
 
@@ -222,8 +223,8 @@ At the moment, a new blank window of Chrome browser should appear. Isn't it real
 
 Let's open the Wikipedia page. There is a function that makes another POST request to the `http://127.0.0.1:9999/session/XXXXXXXXXXXXX/url` endpoint passing a target URL in JSON payload.
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn goto-url
   [session url]
   (client/post
@@ -237,8 +238,8 @@ Let's open the Wikipedia page. There is a function that makes another POST reque
 
 The blank window should load the Wikipedia content. Let's search for something. To interact with any element on a page, we need to know its ID first. Don't mix it with the `id` HTML attribute. Instead, this is a long string that identifies a DOM node in the browser's memory, for example, "0.5383067151615304-1".
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn- find-element
   [session selector]
   (-> (client/post
@@ -254,8 +255,8 @@ The blank window should load the Wikipedia content. Let's search for something. 
 
 This function finds an element using XPath expression and returns the long ID. It will be a foundation for two high-level wrappers for inputting text and clicking on something:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn input-text
   [session selector text]
   (let [element (find-element session selector)]
@@ -274,8 +275,8 @@ This function finds an element using XPath expression and returns the long ID. I
 
 The following code inputs "Clojure" in a search field and clicks on a loupe button that triggers search request:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (input-text _sess ".//*[@id='searchInput']" "Clojure")
 
 (click _sess ".//*[@id='searchButton']")
@@ -287,8 +288,8 @@ Combining `goto-url`, `input-text` and `click` functions you may play any scenar
 
 To quit the session, send a new request:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn delete-session
   [session]
   (client/delete
@@ -303,8 +304,8 @@ At this moment, the browser window should disappear.
 
 Remember, the process we started before still hangs. If anybody tries to spawn a new chromedriver, they will get an error saying the port 9999 is already used. So we stop the process manually:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defn stop-process
   [^Process p]
   (when (alive? p)
@@ -319,8 +320,8 @@ The `.destroy` method sends a signal to a process to stop but it might take some
 
 Forcing a programmer to keep in mind all the resources they must release is a bit tedious. Moreover, an exception might occur when calling the API. As the result, the process will hang forever. It would be great to create a macro that spawns a process, binds it to a local variable and stops it no matter if there was an exception or not.
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (defmacro with-process
   [[bind & params] & body]
   `(let [~bind (proc-start ~@params)]
@@ -332,8 +333,8 @@ Forcing a programmer to keep in mind all the resources they must release is a bi
 
 The first argument of that macro is a binding vector. Its first element stands for a local variable a process instance should be bound to. The rest of the vector are parameters to the `proc-start` function. The `body` is an arbitrary Clojure code to execute. The trick is, we wrap the whole logic into a `let` form that provides an instance of a process bound to some symbol. Body is protected with `try-finally` form that shuts down the process in any case. Here is an example:
 
-{lang=clojure, linenos=off}
-~~~
+
+~~~clojure
 (with-process
   [proc ["chromedriver" "-p" 9999] {:env {:debug 1}}]
   (let [session (init-session)]
