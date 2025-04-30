@@ -68,12 +68,11 @@ Let's initiate some of the classes we've imported:
 
 Some Java classes provide static methods. Calling such a method doesn't require to create an instance of a class. Access them via slash as follows:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (def uuid (UUID/randomUUID))
 
 #uuid "fb5876a6-b3c6-47dc-89d6-10dafcaf0888"
-~~~
+```
 
 [java-system]:https://docs.oracle.com/javase/9/docs/api/java/lang/System.html
 
@@ -81,15 +80,13 @@ The standard [System class][java-system] carries plenty of static methods useful
 
 To stop the program completely call its `exit` method passing an exit code. Running it in a REPL session will terminate it:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (System/exit 0)
-~~~
+```
 
 The `getenv` static methods either return either a single environ variable or the whole map of them depending on arity (the number of passed parameters):
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (System/getenv "HOME")
 "/Users/ivan"
 
@@ -100,21 +97,20 @@ The `getenv` static methods either return either a single environ variable or th
  "LEIN_HOME"    "/Users/ivan/.lein"
  ;; truncated
  }
-~~~
+```
 
 In the second case, we convent a Java native map into its Clojure counterpart to make the output look better.
 
 A simple wrapper to get the current number of seconds since 1 Jan 1970 which is also known as Unix timestamp or epoch:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (defn epoch
   []
   (quot (System/currentTimeMillis) 1000))
 
 (epoch)
 1535186375
-~~~
+```
 
 ## Object methods
 
@@ -122,41 +118,37 @@ Having an object, usually, you are interested in calling its methods. To access 
 
 Here is how you may know a file's absolute path:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (def file (File. "book.txt"))
 
 (.getAbsolutePath file)
 "/Users/ivan/drafts/project/book.txt"
-~~~
+```
 
 To check if it really exists:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (.exists file)
 true
-~~~
+```
 
 Or to rename (move) it:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (.renameTo file (File. "/Users/ivan/ready/project/book-ready.txt"))
 true
-~~~
+```
 
 ## Nested classes
 
 Sometimes, a class declares a nested class. To access it, put a dollar sign between their names. For example, if a class `Foo` carries a nested class `Bar`, a syntax to reach it will be:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (ns project.into
   (:import com.project.Foo$Bar))
 
 (def bar (Foo$Bar. param1 param2))
-~~~
+```
 
 ## Universal Java access
 
@@ -164,11 +156,10 @@ There is a special Dot form that acts like a universal access to Java properties
 
 To read a static field:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (. File pathSeparator)
 ":"
-~~~
+```
 
 To call a static method:
 
