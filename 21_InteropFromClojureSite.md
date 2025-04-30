@@ -29,28 +29,28 @@ String  ;; Classname
 
 # Member access
 
-- (.instanceMember instance args*) -> (.toUpperCase "fred") -> "FRED"
-- (.instanceMember Classname args*)
-- (.-instanceField instance)
+- (.instanceMember instance args*) -> (.toUpperCase "fred") -> "FRED"/
+- (.instanceMember Classname args*)/
+- (.-instanceField instance)/
 - (Classname/staticMethod args*)
 - (Classname/.instanceMethod instance args*)
-- Classname/staticField -> Math/PI -> 3.141592653589793
+- Classname/staticField -> Math/PI -> 3.141592653589793/
 
 
 ```clojure
-(.toUpperCase "fred")
+(.toUpperCase "fred")  ;; (.instanceMember instance args*)
 ;;returns:  "FRED"
 
-(.getName String)
+(.getName String)  ;; (.instanceMember Classname args*)
 ;;returns:  "java.lang.String"
 
-(.-x (java.awt.Point. 1 2))
+(.-x (java.awt.Point. 1 2))  ;; (.-instanceField instance)
 ;;returns:  1
 
-(System/getProperty "java.vm.version")
+(System/getProperty "java.vm.version")  ;; (Classname/staticMethod args*)
 ;;returns:  "1.6.0_07-b06-57"
 
-Math/PI
+Math/PI  ;; Classname/staticField
 ;;returns:  3.141592653589793
 ```
 
