@@ -45,14 +45,20 @@ public class ExcelDispatchTest {
 public static final ints:
 
 > LOCALE_SYSTEM_DEFAULT = 2048; // Used to set the locale in a call. The user locale is another option
+
 > Method = 1; /** used by callN() and callSubN()
+
 > Get = 2; /** used by callN() and callSubN()
+
 > Put = 4; //** used by put()
+
 > int PutRef = 8; //** not used, probably intended for putRef() 
 
-private final static Object[] NO_OBJECT_ARGS = new Object[0];
-private final static Variant[] NO_VARIANT_ARGS = new Variant[0];
-private final static int[] NO_INT_ARGS = new int[0];
+> private final static Object[] NO_OBJECT_ARGS = new Object[0];
+
+> private final static Variant[] NO_VARIANT_ARGS = new Variant[0];
+
+> private final static int[] NO_INT_ARGS = new int[0];
 
 
 ## Dispatch methods:
@@ -119,17 +125,6 @@ invoke(dispatchTarget, dispid, Dispatch.Put, new Object[] { val }, new int[1]);
 Dispatch.call(workbook, "Close", f);
 ```
 
-- Dispatch dispatchTarget, int dispid
-
-```java
-callN(dispatchTarget, dispid, NO_VARIANT_ARGS);
-```
-
-- Dispatch dispatchTarget, int dispid, java.lang.Object... attributes
-
-```java
-callN(dispatchTarget, dispid, attributes);
-```
 
 - Dispatch dispatchTarget, java.lang.String name
 
@@ -142,6 +137,52 @@ callN(dispatchTarget, name, NO_VARIANT_ARGS);
 ```java
 callN(dispatchTarget, name, attributes);
 ```
+
+- Dispatch dispatchTarget, int dispid
+
+```java
+callN(dispatchTarget, dispid, NO_VARIANT_ARGS);
+```
+
+- Dispatch dispatchTarget, int dispid, java.lang.Object... attributes
+
+```java
+callN(dispatchTarget, dispid, attributes);
+```
+
+### Invoke
+
+**Examples**
+
+```java
+Dispatch a1 = Dispatch.invoke(sheet, "Range", Dispatch.Get, new Object[] { "A1" }, new int[1]).toDispatch();
+
+Dispatch a2 = Dispatch.invoke(sheet, "Range", Dispatch.Get, new Object[] { "A2" }, new int[1]).toDispatch();
+
+xl.invoke("Quit", new Variant[] {});
+```
+
+- Dispatch dispatchTarget, java.lang.String name, int wFlags, java.lang.Object[] oArg, int[] uArgErr
+
+```java
+invokev(dispatchTarget, name, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr);
+```
+
+- Dispatch dispatchTarget, java.lang.String name, int dispID, int lcid, int wFlags, java.lang.Object[] oArg, int[] uArgErr
+
+```java
+invokev(dispatchTarget, name, dispID, lcid, wFlags,	VariantUtilities.objectsToVariants(oArg), uArgErr);
+```
+
+- Dispatch dispatchTarget, int dispID, int wFlags, java.lang.Object[] oArg, int[] uArgErr)
+
+```java
+invokev(dispatchTarget, dispID, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr);
+```
+
+
+
+
 
 
 
