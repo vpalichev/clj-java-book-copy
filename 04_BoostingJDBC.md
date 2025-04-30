@@ -14,14 +14,13 @@ JDBC and its [Clojure wrapper][clj-jdbc] provide general APIs that let you work 
 
 Let's get started with the database module in the project. I believe you have PostgreSQL installed on your local machine. If you don't, get it with your package manager with:
 
-{lang=bash, linenos=off}
 ```bash
 sudo apt-get install postgresql
 ```
 
 or
 
-{lang=, linenos=off}
+
 ```bash
 brew install postgresql
 ```
@@ -32,7 +31,7 @@ depending on if you use Ubuntu or Mac. In case you've got Windows desktop or som
 
 Add the JDBC wrapper and the driver Java library into dependencies:
 
-{lang=, linenos=off}
+
 ```clojure
 [org.clojure/java.jdbc "0.6.1"]
 [org.postgresql/postgresql "42.1.3"]
@@ -40,7 +39,7 @@ Add the JDBC wrapper and the driver Java library into dependencies:
 
 These two lines highlight the very architecture of database access. JDBC wrapper (`java.jdbc`) provides a top-level API to query the database. The driver (`postgresql`) knows how to perform them against a specific backend. For MySQL, you'll need to replace `postgresql` driver dependency with:
 
-{lang=, linenos=off}
+
 ```clojure
 [org.clojure/java.jdbc "0.6.1"]
 [mysql/mysql-connector-java "8.0.12"]
@@ -48,33 +47,33 @@ These two lines highlight the very architecture of database access. JDBC wrapper
 
 Let's quickly prepare a new database for our experiments. Switch to the `postgres` user first:
 
-{lang=, linenos=off}
+
 ```bash
 su - postgres
 ```
 
 The `createuser` tool is distributed with PostgreSQL installation. Use it to create a new database user. The `-S` flag says it's a superuser with the ultimate set of capabilities. The command will prompt you for a password:
 
-{lang=, linenos=off}
+
 ```bash
 createuser -S -W clj-user
 ```
 
 Another `createdb` tool also comes within PostgreSQL setup. It creates a new database which's owner is the user we've just created:
 
-{lang=, linenos=off}
+
 ```bash
 createdb -O clj-user clj-db
 ```
 
 Now that we have a user within a database, login into PostgreSQL console and create an empty table:
 
-{lang=, linenos=off}
+
 ```bash
 psql clj-db clj-user
 ```
 
-{lang=, linenos=off}
+
 ```sql
 create table test (id serial primary key);
 ```
@@ -85,7 +84,7 @@ So far, all the preparations are done. Switch to your text editor to go on with 
 
 Create a separate Clojure module to keep all the database features in one place:
 
-{lang=, linenos=off}
+
 ```clojure
 (ns project.db
   (:require
@@ -94,7 +93,7 @@ Create a separate Clojure module to keep all the database features in one place:
 
 Declare a variable that is known as a *database spec*. It's a map holds DB credentials and probably additional options:
 
-{lang=, linenos=off}
+
 ```clojure
 (def db
   {:dbtype "postgresql"
@@ -106,7 +105,7 @@ Declare a variable that is known as a *database spec*. It's a map holds DB crede
 
 Every JDBC call requires you to pass that spec as the first argument. To make the code a bit shorter, add some shortcuts using `partial` application:
 
-{lang=, linenos=off}
+
 ```clojure
 (def query (partial jdbc/query db))
 
@@ -117,7 +116,7 @@ Every JDBC call requires you to pass that spec as the first argument. To make th
 
 A quick check:
 
-{lang=, linenos=off}
+
 ```clojure
 (query "select 42 as the_answer")
 
@@ -134,7 +133,7 @@ Let's start with something simple. By default, JDBC doesn't know how to process 
 
 To let the database know to treat those classes, extend the `jdbc/ISQLValue` protocol as follows:
 
-{lang=, linenos=off}
+
 ```clojure
 (extend-protocol jdbc/ISQLValue
 
@@ -149,7 +148,7 @@ To let the database know to treat those classes, extend the `jdbc/ISQLValue` pro
 
 To check if the changes have been accepted, add new fields to our table and insert something:
 
-{lang=, linenos=off}
+
 ```clojure
 (execute! "alter table test add column url text")
 (execute! "alter table test add column uuid text")
@@ -170,7 +169,7 @@ The things start getting tougher when non-string based types come into play. Tak
 
 By default, JDBC returns dates from queries without troubles:
 
-{lang=, linenos=off}
+
 ```clojure
 (execute! "alter table test add column created_at timestamp default now()")
 
@@ -184,14 +183,14 @@ By default, JDBC returns dates from queries without troubles:
 
 But passing a date as a parameter
 
-{lang=, linenos=off}
+
 ```clojure
 (insert! :test {:created_at #inst "2017-01-01"})
 ```
 
 causes an error:
 
-{lang=, linenos=off}
+
 ```text
 PSQLException Can't infer the SQL type to use for an instance of
 java.util.Date. Use setObject() with an explicit Types value
@@ -200,7 +199,7 @@ to specify the type to use.
 
 This looks a bit inconsistent but let's fix it. JDBC awaits for a special SQL-flavored class `java.sql.Timestamp`. Turning one type to another is done by converting the source date into milliseconds and restoring the timestamp from them:
 
-{lang=, linenos=off}
+
 ```clojure
 (extend-protocol jdbc/ISQLValue
 
@@ -211,7 +210,7 @@ This looks a bit inconsistent but let's fix it. JDBC awaits for a special SQL-fl
 
 Now the native Date class should work:
 
-{lang=, linenos=off}
+
 ```clojure
 (insert! :test {:created_at #inst "2017-01-01"})
 
@@ -225,7 +224,7 @@ Now the native Date class should work:
 
 Another example of inconsistency with types in JDBC is enum columns. In Postgres, an enum is a special type that has only certain values. Let's create a simple enum type bound to a new column:
 
-{lang=, linenos=off}
+
 ```clojure
 (execute! "create type type_color as enum ('red', 'green', 'blue')")
 (execute! "alter table test add column color type_color")
@@ -240,14 +239,14 @@ Another example of inconsistency with types in JDBC is enum columns. In Postgres
 
 That works fine, all the colour values are strings as expected. But trying to insert a new row...
 
-{lang=, linenos=off}
+
 ```clojure
 (insert! :test {:color "blue"})
 ```
 
 ...causes an error:
 
-{lang=, linenos=off}
+
 ```text
 PSQLException ERROR: column "color" is of type type_color
 but expression is of type character varying
@@ -257,14 +256,14 @@ This is because JDBC treats `type_color` as something that really differs from a
 
 `PGObject` is a low-level object represents Postgres-specific value. It has just two meaningful fields: a type and its value, both strings. At the beginning of our module, add a new import line:
 
-{lang=, linenos=off}
+
 ```clojure
 (:import org.postgresql.util.PGobject)
 ```
 
 and create a bit of wrapper:
 
-{lang=, linenos=off}
+
 ```clojure
 (defn ->pgobject
   [type value]
@@ -281,7 +280,7 @@ and create a bit of wrapper:
 
 Now you may pass these `enum-X` values into queries:
 
-{lang=, linenos=off}
+
 ```clojure
 (insert! :test {:color enum-B})
 
@@ -304,7 +303,7 @@ Depending on a kind of an event, a set of fields may vary. Maintaining a SQL tab
 
 The following example highlights how you can detach a nested JSON field into a separate column:
 
-{lang=, linenos=off}
+
 ```sql
 alter table ipns add column user_email text;
 udpate ipns set user_email = data#>>'{user,email}';
@@ -314,7 +313,7 @@ udpate ipns set user_email = data#>>'{user,email}';
 
 The great idea would be to read and write JSON using Clojure maps. We've got to plug in a new Clojure library for processing JSON:
 
-{lang=, linenos=off}
+
 ```clojure
 ;; in your project deps
 [cheshire "5.6.3"]
@@ -325,7 +324,7 @@ The great idea would be to read and write JSON using Clojure maps. We've got to 
 
 Let's add a new column to our test table and extend certain protocols:
 
-{lang=, linenos=off}
+
 ```clojure
 (execute! "alter table test add column data json")
 
@@ -337,7 +336,7 @@ Let's add a new column to our test table and extend certain protocols:
 
 Now that you pass a native Clojure map as a parameter for the `data` field, it will turn into a `PGObject` that Postgres driver knows how to treat. But querying the table still returns `PGObject` which is not what we expect. There is another `IResultSetReadColumn` protocol to specify how the data come from the driver should be processed:
 
-{lang=, linenos=off}
+
 ```clojure
 (extend-protocol jdbc/IResultSetReadColumn
   PGobject
@@ -351,7 +350,7 @@ Since `PGObject` represents not only `json(b)` column but any non-primitive enti
 
 In our case, we dispatch an instance of `PGObject` not by its type (obviously, it will always be the same) but rather by a value returned from the `(.getType)` method. There is a great opportunity for a multimethod to get onboard:
 
-{lang=, linenos=off}
+
 ```clojure
 ;; a multimethod with a dispatch function
 (defmulti pgobj->clj
@@ -378,7 +377,7 @@ Since `json` and `jsonb` are different types in JDBC perspective, we have to ext
 
 A quck check:
 
-{lang=, linenos=off}
+
 ```clojure
 (insert! :test {:data {:foo {:bar {:baz [1 2 3 true false nil "hello"]}}}})
 
@@ -419,7 +418,7 @@ One more benefit of using arrays is they prevent you from creating extra bridge 
 
 Moving to practice, let's create an array field and tie it to a Clojure vector. At the moment, we cannot insert arrays with Clojure so we do it with plain SQL:
 
-{lang=, linenos=off}
+
 ```clojure
 (execute! "alter table test add column skill_ids integer[]")
 (execute! "insert into test (skill_ids) values ('{1,2,3}'::integer[])")
@@ -427,7 +426,7 @@ Moving to practice, let's create an array field and tie it to a Clojure vector. 
 
 Querying the database returns a special Java object represents an array:
 
-{lang=, linenos=off}
+
 ```clojure
 (query "select id, skill_ids from test where id = 8")
 
@@ -438,7 +437,7 @@ Querying the database returns a special Java object represents an array:
 
 To convert arrays to Clojure we have to extend the `IResultSetReadColumn` protocol with the `PgArray` class. Import the class first:
 
-{lang=, linenos=off}
+
 ```clojure
 (:import org.postgresql.util.PGobject
          org.postgresql.jdbc.PgArray)
@@ -446,7 +445,7 @@ To convert arrays to Clojure we have to extend the `IResultSetReadColumn` protoc
 
 And extend the protocol:
 
-{lang=, linenos=off}
+
 ```clojure
 (extend-protocol jdbc/IResultSetReadColumn
 
@@ -461,7 +460,7 @@ And extend the protocol:
 
 The code gets Java native array from the `PgArray` and turns it into a Clojure vector calling `vec` function. An interesting detail here is we preserve the base type of Postgres array in the result's metadata:
 
-{lang=, linenos=off}
+
 ```clojure
 (def _res
   (query "select id, skill_ids from test where id = 8"))
@@ -475,7 +474,7 @@ The code gets Java native array from the `PgArray` and turns it into a Clojure v
 
 Turning a Clojure vector into a DB array is a bit tricky. First, we need to know what type the array of. Second, we have to refer the current connection to create an instance of the database array:
 
-{lang=, linenos=off}
+
 ```clojure
 (extend-protocol jdbc/ISQLParameter
 
@@ -492,7 +491,7 @@ In the snippet above, the `val` is a Clojure vector we are about to send to the 
 
 A quick check:
 
-{lang=, linenos=off}
+
 ```clojure
 (insert! :test {:skill_ids ^{:sql/array-type "int4"} [10 20 30]})
 
