@@ -7,12 +7,11 @@ OK, let's do some coding. The problem we are going solve is the following. Imagi
 
 Most of this information is borrowed from [User-Agent HTTP header][user-agent]. It's a string that represents almost everything we need. Each time a user opens a web-page, their browser sends this string. Here is mine, for example, copied from Google Chrome:
 
-{lang=text, linenos=off}
-~~~
+```text
 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6)
 AppleWebKit/537.36 (KHTML, like Gecko)
 Chrome/67.0.3396.99 Safari/537.36
-~~~
+```
 
 The problem with User-Agent is, it is quite bad organized. For decades of chaotic web-development, browser manufacturers have been dumping more and more details there. What it ended up with, there is no a single and clear rule to parse User-Agent. Doing that manually is one of those tasks that look simple but quickly turns into a mess. The right decision would be to import a Java library developed for this purpose.
 
@@ -24,11 +23,10 @@ The whole process consists of three stages. At first, we find a proper library a
 
 The library I chose for that purpose is [UA Detector][uadetector-site]. It has got hundreds of patterns for desktop computers, mobile devices and web-crawlers (Goole, Yahoo, etc). In your `project.clj` file, and the following into the `:dependencies` vector:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 [net.sf.uadetector/uadetector-core "0.9.10"]
 [net.sf.uadetector/uadetector-resources "2014.10"]
-~~~
+```
 
 It looks strange that we added two lines instead of one. This is because of the architecture of a library. It consists of two parts: common API and resources.
 
@@ -38,8 +36,7 @@ The main `uadetector-core` part provides high-level API that interacts with the 
 
 Moving to the step two, let's create a separate namespace where all the Java interop will act. Here is the draft:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (ns project.ua
   (:import [net.sf.uadetector.service
             UADetectorServiceFactory]))
@@ -49,7 +46,7 @@ Moving to the step two, let's create a separate namespace where all the Java int
 
 (defn parse [^String user-agent]
   (.parse parser user-agent))
-~~~
+```
 
 The main detail here is, we created a `parser` object which is an instance of `UserAgentStringParserImpl` class. Since most of the Java objects are mutable, it is better to keep that object being private so nobody can affect it from the outside of the namespace.
 
@@ -57,24 +54,22 @@ The `parse` wrapper function accepts a User-Agent string and calls `.parse` meth
 
 If we call the function with a sample:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (def ua-sample
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6)
    AppleWebKit/537.36 (KHTML, like Gecko)
    Chrome/67.0.3396.99 Safari/537.36")
 
 (def result (parse ua-sample))
-~~~
+```
 
 the result will be an instance of `net.sf.uadetector.UserAgent` class. Its string representation looks like this (truncated):
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 #object[net.sf.uadetector.UserAgent 0x3acfecaa "UserAgent
 [deviceCategory=DeviceCategory [category=PERSONAL_COMPUTER,
 icon=desktop.png, infoUrl=/list-of-ua/device-detail?device=..."]
-~~~
+```
 
 This is definitely not a Clojure structure and thus cannot be used with core functions. Yet it confirms we managed to parse something. Here, step two is finished and we start thinking on how to make the result more Clojure-friendly.
 
@@ -88,16 +83,14 @@ We continue the process until all the values are of primitive types. This is wha
 
 The function we are going to write is not an ordinary `defn` one but rather a part of a protocol. Each data type we need to convert to Clojure extends this protocol. It assures the function operates on only certain types we need but not any other value. Here is the protocol:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (defprotocol ToClojure
   (->clj [x]))
-~~~
+```
 
 Now import the classes we need to extend. In your namespace declaration, extend the `(:import ...)` statement as follows:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (ns project.ua
   (:import [net.sf.uadetector.service
             UADetectorServiceFactory]
@@ -107,14 +100,13 @@ Now import the classes we need to extend. In your namespace declaration, extend 
             VersionNumber
             OperatingSystem
             DeviceCategory]))
-~~~
+```
 
 [javadocs-ua]: http://uadetector.sourceforge.net/modules/uadetector-core/apidocs/net/sf/uadetector/UserAgent.html
 
 Now extend the top-level `UserAgent` class. To know more about its anatomy, take a look at the [Javadocs page][javadocs-ua]. Briefly saying, we are interested in all the getters from that class.
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (extend-protocol ToClojure
 
   UserAgent
@@ -130,7 +122,7 @@ Now extend the top-level `UserAgent` class. To know more about its anatomy, take
      :type-name    (.getTypeName ua)
      :url          (.getUrl ua)
      :version      (.getVersionNumber ua)}))
-~~~
+```
 
 If we pass the `result` variable into the `->clj` function, we will get a map with a structure shown above. This is great, but most of the values of that map are still complex Java classes. We need to update them too.
 
@@ -138,17 +130,15 @@ If we pass the `result` variable into the `->clj` function, we will get a map wi
 
 Let's start with the `:device` field. Rather than keeping it as a Java object, we wrap it into `->clj` and then extend the `DeviceCategory` class so it returns a map. Fix the previous `:device` value:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
   UserAgent
   (->clj [ua]
     {:device       (->clj (.getDeviceCategory ua))
-~~~
+```
 
 Extend `DeviceCategory` as follows:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (extend-protocol ToClojure
 
   DeviceCategory
@@ -159,7 +149,7 @@ Extend `DeviceCategory` as follows:
   java.lang.Enum
   (->clj [e]
     (-> e .name keyword)))
-~~~
+```
 
 The `(.getCategory dev)` method returns a enum Java value represented by `net.sf.uadetector.ReadableDeviceCategory.Category` class. There is no need to extend that class exactly because functions that belong to protocols take inheritance into account. Extending just `java.lang.Enum` class which is an ancestor for `ReadableDeviceCategory.Category` would be enough to make sure all the enum values are converted the same.
 
@@ -169,8 +159,7 @@ So you've got the idea: for every Java class, we describe the way it reflects th
 
 Let's finish with the rest of the task. Taking apart an operating system would be:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (extend-protocol ToClojure
 
   OperatingSystem
@@ -182,12 +171,11 @@ Let's finish with the rest of the task. Taking apart an operating system would b
      :producer-url (.getProducerUrl os)
      :url          (.getUrl os)
      :version      (.getVersionNumber os)}))
-~~~
+```
 
 Another statement for versioning class:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (extend-protocol ToClojure
 
   VersionNumber
@@ -198,14 +186,13 @@ Another statement for versioning class:
      :major     (.getMajor ver)
      :minor     (.getMinor ver)
      :version   (.toVersionString ver)}))
-~~~
+```
 
 ## The final view
 
 The last touches would be to wrap the result of `parse` function with `->clj` so it starts recursive transformation and returns Clojure data instead of `UserAgent` object. The second thing is to clean the code a bit, for example, to join our `extend-protocol` statements into a single one. Here is the final version:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (defn parse [^String user-agent]
   (->clj (.parse parser user-agent)))
 
@@ -247,12 +234,11 @@ The last touches would be to wrap the result of `parse` function with `->clj` so
   java.lang.Enum
   (->clj [e]
     (-> e .name keyword)))
-~~~
+```
 
 A quick test if we really receive Clojure data:
 
-{lang=clojure, linenos=off}
-~~~
+```clojure
 (parse ua-sample)
 
 {:producer "Google Inc."
@@ -286,7 +272,7 @@ A quick test if we really receive Clojure data:
   :major "67"
   :minor "0"
   :version "67.0.3396.99"}}
-~~~
+```
 
 [source]: https://github.com/igrishaev/clj-java-book/blob/master/project/src/project/ua.clj
 
