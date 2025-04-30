@@ -87,20 +87,25 @@ invokev(dispatchTarget, dispid, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS);
 
 ### Put
 
+```java
 Dispatch.put(xl, "Visible", new Variant(true));
 
 Dispatch.put(a1, "Value", "123.456");
 
 Dispatch.put(a2, "Formula", "=A1\*2");
+```
 
+- Dispatch dispatchTarget, **String name**, Object val
 
-.put:  Dispatch dispatchTarget, **String name**, Object val
-
+```java
 invoke(dispatchTarget, name, Dispatch.Put, new Object[] { val }, new int[1]);
+```
 
-.put:  Dispatch dispatchTarget, **int dispid**, Object val
+- Dispatch dispatchTarget, **int dispid**, Object val
 
+```java
 invoke(dispatchTarget, dispid, Dispatch.Put, new Object[] { val }, new int[1]);
+```
 
 ### Call
 
