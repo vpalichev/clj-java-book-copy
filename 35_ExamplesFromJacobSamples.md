@@ -196,13 +196,27 @@ invokev(dispatchTarget, dispID, wFlags, VariantUtilities.objectsToVariants(oArg)
 
 ---
 
-Invokev called by: Invoke, CallN, Get
+Invokev called by: Invoke (only by Put), CallN (only by Call), Get (calls invokev directly)
 
 CallN called by: Call
 
 Invoke called by: Put
 
 ---
+
+---
+
+Get -->> Invokev
+
+Get = invokev(dispatchTarget, name, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS) invokev(dispatchTarget, dispid, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS)
+
+Put -->> Invoke -->> Invokev
+
+Call -->> CallN --> Invokev
+
+---
+
+
 
 **Invoke native**
 ```java
@@ -225,64 +239,79 @@ invokev(dispatchTarget, null, dispID, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vA
 
 **Invoke**
 
+```java
 Variant invoke(Dispatch dispatchTarget, String name, int dispID, int lcid, int wFlags, Object[] oArg, int[] uArgErr)
 Variant invoke(Dispatch dispatchTarget, String name, int wFlags, Object[] oArg, int[] uArgErr)
 Variant invoke(Dispatch dispatchTarget, int dispID,	int wFlags, Object[] oArg, int[] uArgErr)
+```
 
 Calls this:
 
+```java
 invokev(dispatchTarget, name, dispID, lcid, wFlags,	VariantUtilities.objectsToVariants(oArg), uArgErr)
 invokev(dispatchTarget, name, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr)
 invokev(dispatchTarget, dispID, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr)
-
+```
 
 **CallN**
 
+```java
 Variant callN(Dispatch dispatchTarget, String name,	Object... args)
 Variant callN(Dispatch dispatchTarget, int dispID,	Object... args)
+```
 
 Calls this:
 
+```java
 invokev(dispatchTarget, name,   Dispatch.Method | Dispatch.Get, VariantUtilities.objectsToVariants(args), new int[args.length])
 invokev(dispatchTarget, dispID, Dispatch.Method | Dispatch.Get,	VariantUtilities.objectsToVariants(args), new int[args.length])
-
+```
 
 **Call**
 
+```java
 Variant call(Dispatch dispatchTarget, String name)
 Variant call(Dispatch dispatchTarget, String name, Object... attributes)
 Variant call(Dispatch dispatchTarget, int dispid) 
 Variant call(Dispatch dispatchTarget, int dispid, Object... attributes)
+```
 
 Calls this:
 
+```java
 callN(dispatchTarget, name, NO_VARIANT_ARGS)
 callN(dispatchTarget, name, attributes)
 callN(dispatchTarget, dispid, NO_VARIANT_ARGS)
 callN(dispatchTarget, dispid, attributes)
-
+```
 
 **Put**
 
+```java
 void put(Dispatch dispatchTarget, String name, Object val) 
 void put(Dispatch dispatchTarget, int dispid,  Object val) 
+```
 
 Calls this:
 
+```java
 invoke(dispatchTarget, name,   Dispatch.Put, new Object[] { val }, new int[1])
 invoke(dispatchTarget, dispid, Dispatch.Put, new Object[] { val }, new int[1])
-
+```
 
 **Get**
 
+```java
 Variant get(Dispatch dispatchTarget, String name)
 Variant get(Dispatch dispatchTarget, int dispid) 
+```
 
 Calls this:
 
+```java
 invokev(dispatchTarget, name,   Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS)
 invokev(dispatchTarget, dispid, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS)
-
+```
 
 
 
