@@ -206,11 +206,21 @@ Invoke called by: Put
 
 ---
 
-Get -->> Invokev
+Get - Variant Dispatch dispatchTarget, String name -->> Invokev
 
-Get = invokev(dispatchTarget, name, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS) invokev(dispatchTarget, dispid, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS)
+Get = Invokev(dispatchTarget, **name**, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS) 
 
-Put -->> Invoke -->> Invokev
+
+Put - Void Dispatch dispatchTarget, String name, Object val -->> Invoke: -->> Invokev
+
+Invoke: 1> dispatchTarget, 2> name, 3> Dispatch.Put, 4> new Object[] { val } (**single object oArg**), 5> new int[1] (**standard uArgErr**)
+
+Invokev: 1> dispatchTarget, 2> name, 3> 0, 4> Dispatch.LOCALE_SYSTEM_DEFAULT, 5> wFlags, 6> vArg, 7> uArgErr
+
+
+
+Put = 
+
 
 Call -->> CallN --> Invokev
 
