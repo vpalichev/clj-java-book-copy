@@ -182,6 +182,19 @@ invokev(dispatchTarget, dispID, wFlags, VariantUtilities.objectsToVariants(oArg)
 
 ### Call hierarchy
 
+**Invokev** calls invokev__native
+
+**Invoke** calls Invokev
+
+**CallN** calls Invokev
+
+**Call** calls CallN
+
+**Put** calls Invoke
+
+**Get** calls Invokev
+
+
 **Invoke native**
 ```java
 native Variant invokev(Dispatch dispatchTarget, String name, int dispID, int lcid, int wFlags, Variant[] vArg, int[] uArgErr)
@@ -190,27 +203,16 @@ native Variant invokev(Dispatch dispatchTarget, String name, int dispID, int lci
 **Invokev (calls Invoke native)**
 ```java
 Variant invokev(Dispatch dispatchTarget, String name, int wFlags, Variant[] vArg, int[] uArgErr)
-Variant invokev(Dispatch dispatchTarget, String name, int wFlags, Variant[] vArg, int[] uArgErr, int wFlagsEx) 
+Variant invokev(Dispatch dispatchTarget, String name, int wFlags, Variant[] vArg, int[] uArgErr, int wFlagsEx) //not implemented
 Variant invokev(Dispatch dispatchTarget, int dispID,  int wFlags, Variant[] vArg, int[] uArgErr)
 ```
 
 Calls this:
 ```java
-First is native invokev!
 invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
-invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
+invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr) //not implemented
 invokev(dispatchTarget, null, dispID, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
 ```
-
-**CallN**
-
-Variant callN(Dispatch dispatchTarget, String name,	Object... args)
-Variant callN(Dispatch dispatchTarget, int dispID,	Object... args)
-
-Calls this:
-
-invokev(dispatchTarget, name,   Dispatch.Method | Dispatch.Get, VariantUtilities.objectsToVariants(args), new int[args.length])
-invokev(dispatchTarget, dispID, Dispatch.Method | Dispatch.Get,	VariantUtilities.objectsToVariants(args), new int[args.length])
 
 **Invoke**
 
@@ -223,6 +225,17 @@ Calls this:
 invokev(dispatchTarget, name, dispID, lcid, wFlags,	VariantUtilities.objectsToVariants(oArg), uArgErr)
 invokev(dispatchTarget, name, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr)
 invokev(dispatchTarget, dispID, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr)
+
+
+**CallN**
+
+Variant callN(Dispatch dispatchTarget, String name,	Object... args)
+Variant callN(Dispatch dispatchTarget, int dispID,	Object... args)
+
+Calls this:
+
+invokev(dispatchTarget, name,   Dispatch.Method | Dispatch.Get, VariantUtilities.objectsToVariants(args), new int[args.length])
+invokev(dispatchTarget, dispID, Dispatch.Method | Dispatch.Get,	VariantUtilities.objectsToVariants(args), new int[args.length])
 
 
 **Call**
