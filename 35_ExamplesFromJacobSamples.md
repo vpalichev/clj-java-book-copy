@@ -182,18 +182,27 @@ invokev(dispatchTarget, dispID, wFlags, VariantUtilities.objectsToVariants(oArg)
 
 ### Call hierarchy
 
-**Invokev** calls invokev__native
+**Invokev** -->> invokev__native
 
-**Invoke** calls Invokev
+**Invoke** -->> Invokev 1 
 
-**CallN** calls Invokev
+**CallN** -->> Invokev 1
 
-**Call** calls CallN
+**Call** -->> CallN 2
 
-**Put** calls Invoke
+**Put** -->> Invoke 3
 
-**Get** calls Invokev
+**Get** -->> Invokev 1
 
+---
+
+Invokev called by: Invoke, CallN, Get
+
+CallN called by: Call
+
+Invoke called by: Put
+
+---
 
 **Invoke native**
 ```java
