@@ -182,6 +182,24 @@ invokev(dispatchTarget, dispID, wFlags, VariantUtilities.objectsToVariants(oArg)
 
 ### Call hierarchy
 
+**Invokev (Invoke native)**
+
+```java
+native Variant invokev(Dispatch dispatchTarget, String name, int dispID, int lcid, int wFlags, Variant[] vArg, int[] uArgErr)
+Variant invokev(Dispatch dispatchTarget, String name, int wFlags, Variant[] vArg, int[] uArgErr)
+Variant invokev(Dispatch dispatchTarget, String name, int wFlags, Variant[] vArg, int[] uArgErr, int wFlagsEx) 
+Variant invokev(Dispatch dispatchTarget, int dispID,  int wFlags, Variant[] vArg, int[] uArgErr)
+```
+
+Calls this:
+
+```java
+First is native invokev!
+invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
+invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
+invokev(dispatchTarget, null, dispID, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
+```
+
 **CallN**
 
 Variant callN(Dispatch dispatchTarget, String name,	Object... args)
@@ -204,13 +222,13 @@ invokev(dispatchTarget, name, dispID, lcid, wFlags,	VariantUtilities.objectsToVa
 invokev(dispatchTarget, name, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr)
 invokev(dispatchTarget, dispID, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr)
 
+
 **Call**
 
 Variant call(Dispatch dispatchTarget, String name)
 Variant call(Dispatch dispatchTarget, String name, Object... attributes)
 Variant call(Dispatch dispatchTarget, int dispid) 
 Variant call(Dispatch dispatchTarget, int dispid, Object... attributes)
-
 
 Calls this:
 
@@ -230,21 +248,6 @@ Calls this:
 invoke(dispatchTarget, name,   Dispatch.Put, new Object[] { val }, new int[1])
 invoke(dispatchTarget, dispid, Dispatch.Put, new Object[] { val }, new int[1])
 
-
-**Invokev (Invoke native)**
-
-native Variant invokev(Dispatch dispatchTarget, String name, int dispID, int lcid, int wFlags, Variant[] vArg, int[] uArgErr)
-Variant invokev(Dispatch dispatchTarget, String name, int wFlags, Variant[] vArg, int[] uArgErr)
-Variant invokev(Dispatch dispatchTarget, String name, int wFlags, Variant[] vArg, int[] uArgErr, int wFlagsEx) 
-Variant invokev(Dispatch dispatchTarget, int dispID,  int wFlags, Variant[] vArg, int[] uArgErr)
-
-
-Calls this:
-
-First is native invokev!
-invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
-invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
-invokev(dispatchTarget, null, dispID, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
 
 **Get**
 
