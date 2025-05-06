@@ -3,6 +3,28 @@
 
 ### Call hierarchy
 
+
+IDispatch::Invoke method (oaidl.h):
+
+https://learn.microsoft.com/en-us/windows/win32/api/oaidl/nf-oaidl-idispatch-invoke
+
+```cpp
+HRESULT Invoke(
+  [in]      DISPID     dispIdMember,
+  [in]      REFIID     riid,
+  [in]      LCID       lcid,
+  [in]      WORD       wFlags,
+  [in, out] DISPPARAMS *pDispParams,
+  [out]     VARIANT    *pVarResult,
+  [out]     EXCEPINFO  *pExcepInfo,
+  [out]     UINT       *puArgErr
+);
+```
+
+Dispatch function DispInvoke that provides a standard implementation of Invoke:
+
+DispInvoke function (oleauto.h):
+
 ```cpp
 HRESULT DispInvoke(
   void       *_this,
