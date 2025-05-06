@@ -35,13 +35,20 @@ HRESULT DispInvoke(
   ITypeInfo  *ptinfo, //The type information that describes the interface.
   DISPID     dispidMember, //The member to be invoked. Use GetIDsOfNames or the object's documentation to obtain the DISPID.
   WORD       wFlags, //Flags describing the context of the Invoke call.
-  DISPPARAMS *pparams, //Pointer to a structure containing an array of arguments, an array of argument DISPIDs for named arguments, and counts for number of elements in the arrays.
-  VARIANT    *pvarResult, //Pointer to where the result is to be stored, or Null if the caller expects no result. This argument is ignored if DISPATCH_PROPERTYPUT or DISPATCH_PROPERTYPUTREF is specified.
-  EXCEPINFO  *pexcepinfo, //Pointer to a structure containing exception information. This structure should be filled in if DISP_E_EXCEPTION is returned.
-  UINT       *puArgErr //The index within rgvarg of the first argument that has an error. Arguments are stored in pdispparams->rgvarg in reverse order, so the first argument is the one with the highest index in the array. This parameter is returned only when the resulting return value is DISP_E_TYPEMISMATCH or DISP_E_PARAMNOTFOUND.
+  DISPPARAMS *pparams, //Pointer to a structure containing an array of arguments, 
+                       //an array of argument DISPIDs for named arguments, and counts for number of elements in the arrays.
+  VARIANT    *pvarResult, //Pointer to where the result is to be stored, or Null if the caller expects no result.
+                          //This argument is ignored if DISPATCH_PROPERTYPUT or DISPATCH_PROPERTYPUTREF is specified.
+  EXCEPINFO  *pexcepinfo, //Pointer to a structure containing exception information. 
+                          //This structure should be filled in if DISP_E_EXCEPTION is returned.
+  UINT       *puArgErr //The index within rgvarg of the first argument that has an error.
+                       //Arguments are stored in pdispparams->rgvarg in reverse order, 
+                       //so the first argument is the one with the highest index in the array. 
+                       //This parameter is returned only when the resulting return value is DISP_E_TYPEMISMATCH or DISP_E_PARAMNOTFOUND.
 );
 ```
 
+**wFlags:**
 
 **DISPATCH_METHOD**: The member is invoked as a method. If a property has the same name, both this and the DISPATCH_PROPERTYGET flag can be set.
 
