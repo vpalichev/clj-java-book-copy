@@ -3,59 +3,33 @@
 
 ### Call hierarchy
 
-**Invokev** -->> invokev__native
-
-**Invoke** -->> Invokev 1 
-
-**CallN** -->> Invokev 1
-
-**Call** -->> CallN 2
-
-**Put** -->> Invoke 3
-
-**Get** -->> Invokev 1
-
----
-
-Invokev called by: Invoke (only by Put), CallN (only by Call), Get (calls invokev directly)
-
-CallN called by: Call
-
-Invoke called by: Put
-
----
-
----
-
-Get - Variant Dispatch dispatchTarget, String name -->> Invokev
-
-Get = Invokev(dispatchTarget, **name**, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS) 
-
-
-Put - Void Dispatch dispatchTarget, String name, Object val -->> Invoke: -->> Invokev
-
-Invoke: 1> dispatchTarget, 2> name, 3> Dispatch.Put, 4> new Object[] { val } (**single object oArg**), 5> new int[1] (**standard uArgErr**)
-
-Invokev: 1> dispatchTarget, 2> name, 3> 0, 4> Dispatch.LOCALE_SYSTEM_DEFAULT, 5> wFlags, 6> vArg, 7> uArgErr
+```cpp
+HRESULT DispInvoke(
+  void       *_this,
+  ITypeInfo  *ptinfo,
+  DISPID     dispidMember,
+  WORD       wFlags,
+  DISPPARAMS *pparams,
+  VARIANT    *pvarResult,
+  EXCEPINFO  *pexcepinfo,
+  UINT       *puArgErr
+);
+```
 
 
 
-Put = 
 
 
-Call -->> CallN --> Invokev
-
----
-
-
+```cpp
+  JNIEXPORT jobject JNICALL Java_com_jacob_com_Dispatch_invokev(JNIEnv *env, jclass clazz,
+                                                                jobject disp, jstring name, jint dispid,
+                                                                jint lcid, jint wFlags, jobjectArray vArg, jintArray uArgErr)
+```
 
 **Invoke native**
 ```java
 native Variant invokev(Dispatch dispatchTarget, String name, int dispID, int lcid, int wFlags, Variant[] vArg, int[] uArgErr)
 ```
-
-
-
 
 **Invokev (calls Invoke native)**
 ```java
@@ -148,6 +122,54 @@ Calls this:
 invokev(dispatchTarget, name,   Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS)
 invokev(dispatchTarget, dispid, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS)
 ```
+
+
+
+
+
+**Invokev** -->> invokev__native
+
+**Invoke** -->> Invokev 1 
+
+**CallN** -->> Invokev 1
+
+**Call** -->> CallN 2
+
+**Put** -->> Invoke 3
+
+**Get** -->> Invokev 1
+
+---
+
+Invokev called by: Invoke (only by Put), CallN (only by Call), Get (calls invokev directly)
+
+CallN called by: Call
+
+Invoke called by: Put
+
+---
+
+---
+
+Get - Variant Dispatch dispatchTarget, String name -->> Invokev
+
+Get = Invokev(dispatchTarget, **name**, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS) 
+
+
+Put - Void Dispatch dispatchTarget, String name, Object val -->> Invoke: -->> Invokev
+
+Invoke: 1> dispatchTarget, 2> name, 3> Dispatch.Put, 4> new Object[] { val } (**single object oArg**), 5> new int[1] (**standard uArgErr**)
+
+Invokev: 1> dispatchTarget, 2> name, 3> 0, 4> Dispatch.LOCALE_SYSTEM_DEFAULT, 5> wFlags, 6> vArg, 7> uArgErr
+
+
+
+Put = 
+
+
+Call -->> CallN --> Invokev
+
+---
 
 
 
