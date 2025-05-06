@@ -21,6 +21,8 @@ HRESULT Invoke(
 );
 ```
 
+---
+
 Dispatch function DispInvoke that provides a standard implementation of Invoke:
 
 **DispInvoke** function (oleauto.h):
@@ -40,6 +42,17 @@ HRESULT DispInvoke(
 );
 ```
 
+
+**DISPATCH_METHOD**: The member is invoked as a method. If a property has the same name, both this and the DISPATCH_PROPERTYGET flag can be set.
+
+**DISPATCH_PROPERTYGET** The member is retrieved as a property or data member.
+
+**DISPATCH_PROPERTYPUT** The member is changed as a property or data member.
+
+**DISPATCH_PROPERTYPUTREF** The member is changed by a reference assignment, rather than a value assignment. This flag is valid only when the property accepts a reference to an object. 
+
+---
+
 **Direct call from Jacob JNI (Dispatch.cpp)**
 
 ```cpp
@@ -56,6 +69,8 @@ pIDispatch->Invoke(dispID, IID_NULL,
                                                                 jobject disp, jstring name, jint dispid,
                                                                 jint lcid, jint wFlags, jobjectArray vArg, jintArray uArgErr)
 ```
+
+---
 
 **Java native Invoke**
 ```java
