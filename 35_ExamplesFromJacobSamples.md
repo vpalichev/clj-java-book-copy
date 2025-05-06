@@ -60,28 +60,46 @@ HRESULT DispInvoke(
 
 ---
 
-**Direct call from Jacob JNI (Dispatch.cpp)**
-
-```cpp
-//The call itself
-pIDispatch->Invoke(dispID, IID_NULL,
-                              lcid, (WORD)wFlags, &dispparams, v, &excepInfo, (unsigned int *)uAE);
-```
-
 **JNI Export function that calls pIDispatch->Invoke (Dispatch.cpp)**
 
 ```cpp
 //JNI *wrapper around windows call
-  JNIEXPORT jobject JNICALL Java_com_jacob_com_Dispatch_invokev(JNIEnv *env, jclass clazz,
-                                                                jobject disp, jstring name, jint dispid,
-                                                                jint lcid, jint wFlags, jobjectArray vArg, jintArray uArgErr)
+  JNIEXPORT jobject JNICALL Java_com_jacob_com_Dispatch_invokev(JNIEnv *env,
+                                                                jclass clazz,
+                                                                jobject disp, 
+                                                                jstring name, 
+                                                                jint dispid,
+                                                                jint lcid, 
+                                                                jint wFlags, 
+                                                                jobjectArray vArg, 
+                                                                jintArray uArgErr)
+```
+
+**Direct call from Jacob JNI (Dispatch.cpp)**
+
+```cpp
+//The call itself
+pIDispatch->Invoke(dispID, 
+	               IID_NULL,
+                   lcid, 
+                   (WORD)wFlags, 
+                   &dispparams, 
+                   v, 
+                   &excepInfo, 
+                   (unsigned int *)uAE);
 ```
 
 ---
 
 **Java native Invoke**
 ```java
-native Variant invokev(Dispatch dispatchTarget, String name, int dispID, int lcid, int wFlags, Variant[] vArg, int[] uArgErr)
+native Variant invokev(Dispatch dispatchTarget, 
+	                   String name, 
+	                   int dispID, 
+	                   int lcid, 
+	                   int wFlags, 
+	                   Variant[] vArg, 
+	                   int[] uArgErr)
 ```
 
 **Invokev (calls Invoke native)**
