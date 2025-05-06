@@ -4,7 +4,7 @@
 ### Call hierarchy
 
 
-IDispatch::Invoke method (oaidl.h):
+**IDispatch::Invoke** method (oaidl.h):
 
 https://learn.microsoft.com/en-us/windows/win32/api/oaidl/nf-oaidl-idispatch-invoke
 
@@ -23,7 +23,7 @@ HRESULT Invoke(
 
 Dispatch function DispInvoke that provides a standard implementation of Invoke:
 
-DispInvoke function (oleauto.h):
+**DispInvoke** function (oleauto.h):
 
 https://learn.microsoft.com/en-us/windows/win32/api/oleauto/nf-oleauto-dispinvoke
 
@@ -40,6 +40,7 @@ HRESULT DispInvoke(
 );
 ```
 
+**Direct call from Jacob JNI (Dispatch.cpp)**
 
 ```cpp
 //The call itself
@@ -47,6 +48,7 @@ pIDispatch->Invoke(dispID, IID_NULL,
                               lcid, (WORD)wFlags, &dispparams, v, &excepInfo, (unsigned int *)uAE);
 ```
 
+**JNI Export function that calls pIDispatch->Invoke (Dispatch.cpp)**
 
 ```cpp
 //JNI *wrapper around windows call
