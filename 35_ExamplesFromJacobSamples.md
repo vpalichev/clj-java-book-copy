@@ -105,36 +105,34 @@ native Variant invokev(Dispatch dispatchTarget,
 **Invokev (calls Invoke native)**
 ```java
 Variant invokev(Dispatch dispatchTarget, String name, int wFlags, Variant[] vArg, int[] uArgErr)
-
-invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
+        invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
 
 Variant invokev(Dispatch dispatchTarget, int dispID,  int wFlags, Variant[] vArg, int[] uArgErr)
-
-invokev(dispatchTarget, null, dispID, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
+        invokev(dispatchTarget, null, dispID, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
 //not implemented Variant invokev(Dispatch dispatchTarget, String name, int wFlags, Variant[] vArg, int[] uArgErr, int wFlagsEx) 
 //not implemented invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr) 
 ```
-
-Calls this:
-```java
-```
-
-Conclusion: non-native Invokev
+Conclusion: non-native Invokev calls native Invokev with lcid = Dispatch.LOCALE_SYSTEM_DEFAULT, and depending on 
+String or int in second parameter chooses (name, 0) vs. (null dispID), rest argument passed as-is.
 
 **Invoke**
 
 ```java
-Variant invoke(Dispatch dispatchTarget, String name, int dispID, int lcid, int wFlags, Object[] oArg, int[] uArgErr)
+Variant invoke(Dispatch dispatchTarget, String name, int dispID, int lcid, int wFlags,                           Object[] oArg, int[] uArgErr)
+       invokev(dispatchTarget,                 name,     dispID,     lcid,     wFlags, VariantUtilities.objectsToVariants(oArg),      uArgErr)
+
 Variant invoke(Dispatch dispatchTarget, String name, int wFlags, Object[] oArg, int[] uArgErr)
+invokev(dispatchTarget, name, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr)
+
 Variant invoke(Dispatch dispatchTarget, int dispID,	int wFlags, Object[] oArg, int[] uArgErr)
+invokev(dispatchTarget, dispID, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr)
 ```
 
 Calls this:
 
 ```java
-invokev(dispatchTarget, name, dispID, lcid, wFlags,	VariantUtilities.objectsToVariants(oArg), uArgErr)
-invokev(dispatchTarget, name, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr)
-invokev(dispatchTarget, dispID, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr)
+
+
 ```
 
 **CallN**
