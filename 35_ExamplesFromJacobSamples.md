@@ -112,7 +112,7 @@ Variant invokev(Dispatch dispatchTarget, int dispID,  int wFlags, Variant[] vArg
 //not implemented Variant invokev(Dispatch dispatchTarget, String name, int wFlags, Variant[] vArg, int[] uArgErr, int wFlagsEx) 
 //not implemented invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr) 
 ```
-Conclusion: non-native Invokev calls native Invokev with lcid = Dispatch.LOCALE_SYSTEM_DEFAULT, and depending on 
+Conclusion: non-native Invokev provide native Invokev with lcid = Dispatch.LOCALE_SYSTEM_DEFAULT, and depending on 
 String or int in second parameter chooses (name, 0) vs. (null dispID), rest argument passed as-is.
 
 **Invoke**
@@ -134,33 +134,34 @@ One signature is one-to-one call for native invokev, other two are the same 5 ar
 
 **CallN**
 
+CallN is only called by Call
+
 ```java
 Variant callN(Dispatch dispatchTarget, String name,	Object... args)
+      invokev(dispatchTarget, name, Dispatch.Method | Dispatch.Get, VariantUtilities.objectsToVariants(args), new int[args.length])
+
 Variant callN(Dispatch dispatchTarget, int dispID,	Object... args)
+      invokev(dispatchTarget, dispID, Dispatch.Method | Dispatch.Get, VariantUtilities.objectsToVariants(args), new int[args.length])
 ```
 
-Calls this:
+Conclusion: calls CallN calls 5-arguments invokev, converts Object... args with **VariantUtilities.objectsToVariants**,
+and most importantly provides Dispatch.Method | Dispatch.Get wFlags
+(If a property has the same name, both this and the DISPATCH_PROPERTYGET flag can be set)
 
-```java
-invokev(dispatchTarget, name,   Dispatch.Method | Dispatch.Get, VariantUtilities.objectsToVariants(args), new int[args.length])
-invokev(dispatchTarget, dispID, Dispatch.Method | Dispatch.Get,	VariantUtilities.objectsToVariants(args), new int[args.length])
-```
 
 **Call**
 
 ```java
 Variant call(Dispatch dispatchTarget, String name)
-Variant call(Dispatch dispatchTarget, String name, Object... attributes)
-Variant call(Dispatch dispatchTarget, int dispid) 
-Variant call(Dispatch dispatchTarget, int dispid, Object... attributes)
-```
-
-Calls this:
-
-```java
 callN(dispatchTarget, name, NO_VARIANT_ARGS)
-callN(dispatchTarget, name, attributes)
+
+Variant call(Dispatch dispatchTarget, int dispid)
 callN(dispatchTarget, dispid, NO_VARIANT_ARGS)
+
+Variant call(Dispatch dispatchTarget, String name, Object... attributes)
+callN(dispatchTarget, name, attributes)
+
+Variant call(Dispatch dispatchTarget, int dispid, Object... attributes)
 callN(dispatchTarget, dispid, attributes)
 ```
 
