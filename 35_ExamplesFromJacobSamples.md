@@ -10,20 +10,22 @@ https://learn.microsoft.com/en-us/windows/win32/api/oaidl/nf-oaidl-idispatch-inv
 
 ```cpp
 HRESULT Invoke(
-  [in]      DISPID     dispIdMember,
-  [in]      REFIID     riid,
-  [in]      LCID       lcid,
-  [in]      WORD       wFlags,
-  [in, out] DISPPARAMS *pDispParams,
-  [out]     VARIANT    *pVarResult,
-  [out]     EXCEPINFO  *pExcepInfo,
-  [out]     UINT       *puArgErr
+  [in]      DISPID     dispIdMember, //Identifies the member. Use GetIDsOfNames or the object's documentation to obtain the dispatch identifier.
+  [in]      REFIID     riid, //Reserved for future use. Must be IID_NULL.
+  [in]      LCID       lcid, //The locale context in which to interpret arguments
+  [in]      WORD       wFlags, //Flags describing the context of the Invoke call
+  [in, out] DISPPARAMS *pDispParams, //Pointer to a DISPPARAMS structure containing an array of (named) arguments etc.
+  [out]     VARIANT    *pVarResult, //Pointer to the location where the result is to be stored, or NULL (DISPATCH_PROPERTYPUT... ignored)
+  [out]     EXCEPINFO  *pExcepInfo, //Pointer to a structure that contains exception information
+  [out]     UINT       *puArgErr //The index within rgvarg of the first argument that has an error (??)
 );
 ```
 
 Dispatch function DispInvoke that provides a standard implementation of Invoke:
 
 DispInvoke function (oleauto.h):
+
+https://learn.microsoft.com/en-us/windows/win32/api/oleauto/nf-oleauto-dispinvoke
 
 ```cpp
 HRESULT DispInvoke(
