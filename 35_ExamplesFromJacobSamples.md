@@ -122,18 +122,15 @@ Variant invoke(Dispatch dispatchTarget, String name, int dispID, int lcid, int w
        invokev(dispatchTarget,                 name,     dispID,     lcid,     wFlags, VariantUtilities.objectsToVariants(oArg),      uArgErr)
 
 Variant invoke(Dispatch dispatchTarget, String name, int wFlags, Object[] oArg, int[] uArgErr)
-invokev(dispatchTarget, name, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr)
+       invokev(dispatchTarget, name, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr)
 
 Variant invoke(Dispatch dispatchTarget, int dispID,	int wFlags, Object[] oArg, int[] uArgErr)
-invokev(dispatchTarget, dispID, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr)
+       invokev(dispatchTarget, dispID, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr)
 ```
 
-Calls this:
+Conclusion: Main feature of Invoke is converting Object[] oArg to Variant[] vArg with **VariantUtilities.objectsToVariants**
 
-```java
-
-
-```
+One signature is one-to-one call for native invokev, other two are the same 5 arguments choosing between name and dispID
 
 **CallN**
 
