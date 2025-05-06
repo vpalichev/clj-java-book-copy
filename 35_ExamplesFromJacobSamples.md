@@ -80,7 +80,7 @@ HRESULT DispInvoke(
 ```cpp
 //The call itself
 pIDispatch->Invoke(dispID, 
-	               IID_NULL,
+                   IID_NULL,
                    lcid, 
                    (WORD)wFlags, 
                    &dispparams, 
@@ -105,15 +105,18 @@ native Variant invokev(Dispatch dispatchTarget,
 **Invokev (calls Invoke native)**
 ```java
 Variant invokev(Dispatch dispatchTarget, String name, int wFlags, Variant[] vArg, int[] uArgErr)
+
+invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
+
 Variant invokev(Dispatch dispatchTarget, int dispID,  int wFlags, Variant[] vArg, int[] uArgErr)
+
+invokev(dispatchTarget, null, dispID, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
 //not implemented Variant invokev(Dispatch dispatchTarget, String name, int wFlags, Variant[] vArg, int[] uArgErr, int wFlagsEx) 
+//not implemented invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr) 
 ```
 
 Calls this:
 ```java
-invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
-invokev(dispatchTarget, null, dispID, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr)
-//not implemented invokev(dispatchTarget, name, 0, Dispatch.LOCALE_SYSTEM_DEFAULT, wFlags, vArg, uArgErr) 
 ```
 
 Conclusion: non-native Invokev
