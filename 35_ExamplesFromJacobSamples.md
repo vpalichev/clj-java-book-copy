@@ -169,13 +169,9 @@ callN(dispatchTarget, dispid, attributes)
 
 ```java
 void put(Dispatch dispatchTarget, String name, Object val) 
-void put(Dispatch dispatchTarget, int dispid,  Object val) 
-```
-
-Calls this:
-
-```java
 invoke(dispatchTarget, name,   Dispatch.Put, new Object[] { val }, new int[1])
+
+void put(Dispatch dispatchTarget, int dispid,  Object val) 
 invoke(dispatchTarget, dispid, Dispatch.Put, new Object[] { val }, new int[1])
 ```
 
@@ -183,15 +179,12 @@ invoke(dispatchTarget, dispid, Dispatch.Put, new Object[] { val }, new int[1])
 
 ```java
 Variant get(Dispatch dispatchTarget, String name)
-Variant get(Dispatch dispatchTarget, int dispid) 
-```
-
-Calls this:
-
-```java
 invokev(dispatchTarget, name,   Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS)
+
+Variant get(Dispatch dispatchTarget, int dispid) 
 invokev(dispatchTarget, dispid, Dispatch.Get, NO_VARIANT_ARGS, NO_INT_ARGS)
 ```
+
 
 
 
@@ -422,3 +415,56 @@ invokev(dispatchTarget, name, dispID, lcid, wFlags,	VariantUtilities.objectsToVa
 ```java
 invokev(dispatchTarget, dispID, wFlags, VariantUtilities.objectsToVariants(oArg), uArgErr);
 ```
+
+
+
+
+---
+
+For the sake of simpicity, let's assume that we use only dispID and not 
+
+
+
+
+**Java native Invoke**
+```java
+
+                          native invokev            invokev                  
+native Variant invokev(Dispatch dispatchTarget,  dispatchTarget    
+                       String name,              null
+                       int dispID,               dispID
+                       int lcid,                 Dispatch.LOCALE_SYSTEM_DEFAULT
+                       int wFlags,               wFlags
+                       Variant[] vArg,           vArg
+                       int[] uArgErr)            uArgErr
+```
+
+  native invokev             invokev(5)                          invoke(5,7)                                 Call(2,3)
+Dispatch dispatchTarget,  dispatchTarget                      dispatchTarget                             dispatchTarget
+String name,              null(\*)                            null(\*)                                   null(\*)
+int dispID,               dispID                              dispID                                     dispID
+int lcid,                 Dispatch.LOCALE_SYSTEM_DEFAULT(\*)  Dispatch.LOCALE_SYSTEM_DEFAULT(\*)         Dispatch.LOCALE_SYSTEM_DEFAULT(\*)
+int wFlags,               wFlags                              wFlags                                     Dispatch.Method | Dispatch.Get
+Variant[] vArg,           vArg                                VariantUtilities.objectsToVariants(oArg)   VariantUtilities.objectsToVariants(args)/NO_VARIANT_ARGS
+int[] uArgErr)            uArgErr                             uArgErr                                    new int[args.length]
+
+
+
+
+
+CallN is only called by Call
+
+```java
+Variant callN(Dispatch dispatchTarget, int dispID,  Object... args)
+      invokev(dispatchTarget, dispID, Dispatch.Method | Dispatch.Get, VariantUtilities.objectsToVariants(args), new int[args.length])
+```
+Conclusion: calls CallN calls 5-arguments invokev, converts Object... args with **VariantUtilities.objectsToVariants**,
+and most importantly provides Dispatch.Method | Dispatch.Get wFlags
+(If a property has the same name, both this and the DISPATCH_PROPERTYGET flag can be set)
+**Call**
+```java
+Variant call(Dispatch dispatchTarget, int dispid)
+callN(dispatchTarget, dispid, NO_VARIANT_ARGS)
+
+Variant call(Dispatch dispatchTarget, int dispid, Object... attributes)
+callN(dispatchTarget, dispid, attributes)
