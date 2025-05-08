@@ -60,6 +60,27 @@ HRESULT DispInvoke(
 
 ---
 
+
+For the sake of simpicity, let's assume that we use only dispID and not names
+
+
+
+| native invokev           | variant invokev(5)                 | variant invoke(5,7)                      | variant Call(2,3)                                        | variant Get(2)                     | void Put(3)                                              |
+|--------------------------|------------------------------------|------------------------------------------|----------------------------------------------------------|------------------------------------|----------------------------------------------------------|
+| Dispatch dispatchTarget, | dispatchTarget                     | dispatchTarget                           | dispatchTarget                                           | dispatchTarget                     | dispatchTarget                                           |
+| String name,             | null(\*)                           | null(\*)                                 | null(\*)                                                 | null(\*)                           | null(\*)                                                 |
+| int dispID,              | dispID                             | dispID                                   | dispID                                                   | dispID                             | dispID                                                   |
+| int lcid,                | Dispatch.LOCALE_SYSTEM_DEFAULT(\*) | Dispatch.LOCALE_SYSTEM_DEFAULT(\*)       | Dispatch.LOCALE_SYSTEM_DEFAULT(\*)                       | Dispatch.LOCALE_SYSTEM_DEFAULT(\*) | Dispatch.LOCALE_SYSTEM_DEFAULT(\*)                       |
+| int wFlags,              | wFlags                             | wFlags                                   | Dispatch.Method \| Dispatch.Get                          | Dispatch.Get                       | Dispatch.Put                                             |
+| Variant[] vArg,          | vArg                               | VariantUtilities.objectsToVariants(oArg) | NO_VARIANT_ARGS/VariantUtilities.objectsToVariants(args) | NO_VARIANT_ARGS                    | VariantUtilities.objectsToVariants(new Object[] { val }) |
+| int[] uArgErr)           | uArgErr                            | uArgErr                                  | new int[args.length]                                     | NO_INT_ARGS                        | new int[1]                                               |
+
+
+---
+
+
+
+
 **JNI Export function that calls pIDispatch->Invoke (Dispatch.cpp)**
 
 ```cpp
@@ -417,35 +438,5 @@ invokev(dispatchTarget, dispID, wFlags, VariantUtilities.objectsToVariants(oArg)
 ```
 
 
-
-
----
-
-For the sake of simpicity, let's assume that we use only dispID and not names
-
-
-
-| native invokev           | variant invokev(5)                 | variant invoke(5,7)                      | variant Call(2,3)                                        | variant Get(2)                     | void Put(3)                                              |
-|--------------------------|------------------------------------|------------------------------------------|----------------------------------------------------------|------------------------------------|----------------------------------------------------------|
-| Dispatch dispatchTarget, | dispatchTarget                     | dispatchTarget                           | dispatchTarget                                           | dispatchTarget                     | dispatchTarget                                           |
-| String name,             | null(\*)                           | null(\*)                                 | null(\*)                                                 | null(\*)                           | null(\*)                                                 |
-| int dispID,              | dispID                             | dispID                                   | dispID                                                   | dispID                             | dispID                                                   |
-| int lcid,                | Dispatch.LOCALE_SYSTEM_DEFAULT(\*) | Dispatch.LOCALE_SYSTEM_DEFAULT(\*)       | Dispatch.LOCALE_SYSTEM_DEFAULT(\*)                       | Dispatch.LOCALE_SYSTEM_DEFAULT(\*) | Dispatch.LOCALE_SYSTEM_DEFAULT(\*)                       |
-| int wFlags,              | wFlags                             | wFlags                                   | Dispatch.Method \| Dispatch.Get                          | Dispatch.Get                       | Dispatch.Put                                             |
-| Variant[] vArg,          | vArg                               | VariantUtilities.objectsToVariants(oArg) | NO_VARIANT_ARGS/VariantUtilities.objectsToVariants(args) | NO_VARIANT_ARGS                    | VariantUtilities.objectsToVariants(new Object[] { val }) |
-| int[] uArgErr)           | uArgErr                            | uArgErr                                  | new int[args.length]                                     | NO_INT_ARGS                        | new int[1]                                               |
-
-
-
-
-
-  native invokev            variant invokev(5)                  variant invoke(5,7)                        variant Call(2,3)                                         variant Get(2)                       void Put(3)
-Dispatch dispatchTarget,  dispatchTarget                      dispatchTarget                             dispatchTarget                                            dispatchTarget                       dispatchTarget
-String name,              null(\*)                            null(\*)                                   null(\*)                                                  null(\*)                             null(\*)
-int dispID,               dispID                              dispID                                     dispID                                                    dispID                               dispID
-int lcid,                 Dispatch.LOCALE_SYSTEM_DEFAULT(\*)  Dispatch.LOCALE_SYSTEM_DEFAULT(\*)         Dispatch.LOCALE_SYSTEM_DEFAULT(\*)                        Dispatch.LOCALE_SYSTEM_DEFAULT(\*)   Dispatch.LOCALE_SYSTEM_DEFAULT(\*)
-int wFlags,               wFlags                              wFlags                                     Dispatch.Method | Dispatch.Get                            Dispatch.Get                         Dispatch.Put
-Variant[] vArg,           vArg                                VariantUtilities.objectsToVariants(oArg)   NO_VARIANT_ARGS/VariantUtilities.objectsToVariants(args)  NO_VARIANT_ARGS                      VariantUtilities.objectsToVariants(new Object[] { val })
-int[] uArgErr)            uArgErr                             uArgErr                                    new int[args.length]                                      NO_INT_ARGS                          new int[1]
 
 
