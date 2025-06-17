@@ -271,7 +271,7 @@ which is more readable and neat.
 
 ## Rest Java arguments
 
-Some Java methods accept an arbitrary number of arguments. They are marked with ellipsis in signatures and represent an array of objects when accessing them. A good example is a `format` method of a `String` class:
+Some Java methods accept an arbitrary number of arguments, called **varargs**. They are marked with ellipsis in signatures and represent an array of objects when accessing them. A good example is a `format` method of a `String` class:
 
 ```java
 static String    format(String format, Object... args)
